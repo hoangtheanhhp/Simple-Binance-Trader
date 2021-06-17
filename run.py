@@ -52,14 +52,15 @@ def settings_reader():
     # Setting reader function to parse over the settings file and collect kv pairs.
 
     ## Setup settings file object with initial default variables.
-    settings_file_data = {'public_key':'', 'private_key':'', 'host_ip':'127.0.0.1', 'host_port':5000, 'max_candles':500,'max_depth':50}
+    settings_file_data = {'public_key': '', 'private_key': '', 'host_ip': '127.0.0.1', 'host_port': 5000,
+                          'max_candles': 500, 'max_depth': 50}
 
     ## Read the settings file and extract the fields.
     with open(SETTINGS_FILE_NAME, 'r') as f:
         for line in f.readlines():
 
             ### Check for kv line.
-            if not('=' in line) or line[0] == '#':
+            if not ('=' in line) or line[0] == '#':
                 continue
 
             key, data = line.split('=')
@@ -93,17 +94,17 @@ def settings_reader():
             elif key == 'MAX_DEPTH':
                 data = int(data)
 
-            settings_file_data.update({key.lower():data})
+            settings_file_data.update({key.lower(): data})
 
-    return(settings_file_data)
+    return (settings_file_data)
 
 
 if __name__ == '__main__':
 
     ## Check and make cache/logs dir.
-    if not(os.path.exists(LOGS_DIR)):
+    if not (os.path.exists(LOGS_DIR)):
         os.makedirs(LOGS_DIR, exist_ok=True)
-    if not(os.path.exists(CACHE_DIR)):
+    if not (os.path.exists(CACHE_DIR)):
         os.makedirs(CACHE_DIR, exist_ok=True)
 
     ## Load settings/create settings file.
@@ -114,4 +115,3 @@ if __name__ == '__main__':
         with open(SETTINGS_FILE_NAME, 'w') as f:
             f.write(DEFAULT_SETTINGS_DATA)
         print('Created settings.conf file.')
-

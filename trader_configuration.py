@@ -99,7 +99,7 @@ def long_exit_conditions(custom_conditional_data, trade_information, indicators,
     return({'order_type':'STOP_LOSS', 
             'side':'SELL', 
             'price':price,
-            'stopPrice':price,
+            'stopPrice':price*0.05,
             'description':'Long exit stop-loss', 
             'order_type':'STOP_LOSS_LIMIT'})
 
