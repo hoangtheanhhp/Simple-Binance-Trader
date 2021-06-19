@@ -11,6 +11,8 @@ LOGS_DIR = 'logs/'.format(cwd)
 ## Settup logging.
 log_format = '%(asctime)s:%(name)s:%(message)s'
 logging.basicConfig(
+    filename='app.log',
+    filemode='w',
     format=log_format,
     level=logging.INFO)
 logger = logging.getLogger()
@@ -30,13 +32,13 @@ MARKET_TYPE=SPOT
 UPDATE_BNB_BALANCE=True
 
 # Interval used for the trader (1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d).
-TRADER_INTERVAL=15m
+TRADER_INTERVAL=1h
 
 # The currency max the trader will use (in BTC) also note this scales up with the number of markets i.e. 2 pairs each market will have 0.0015 as their trading currency pair.
-TRADING_CURRENCY=0.002
+TRADING_CURRENCY=20
 
 # The markets that will be traded (currently only BTC markets) seperate markets with a , for multi market trading.
-TRADING_MARKETS=BTC-ETH,BTC-LTC
+TRADING_MARKETS=BUSD-NEAR,BUSD-SOL,BUSD-ETH,BUSD-AVAX
 
 # Configuration for the webapp (default if left blank is IP=127.0.0.1, Port=5000)
 HOST_IP=
