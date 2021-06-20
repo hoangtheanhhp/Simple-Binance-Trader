@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import technical_indicators as TI
 
-## Minimum price rounding.
+# Minimum price rounding.
 pRounding = 8
 
 
@@ -20,7 +20,7 @@ def technical_indicators(candles):
     indicators.update({'ema': {}})
     indicators['ema'].update({'ema200': TI.get_EMA(close_prices, 200, time_values=time_values, map_time=True)})
 
-    return (indicators)
+    return indicators
 
 
 '''
@@ -72,48 +72,29 @@ def technical_indicators(candles):
 '''
 
 
-def other_conditions(custom_conditional_data, position_information, previous_trades, position_type, candles, indicators,
-                     symbol):
-    can_order = True
-
-    ## If trader has finished trade allow it to continue trading straight away.
-    if position_information['market_status'] == 'COMPLETE_TRADE':
-        position_information['market_status'] = 'TRADING'
-
-    position_information.update({'can_order': can_order})
-    return (custom_conditional_data, position_information)
-
-
 def long_exit_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
-    ## Place Long exit (sell) conditions under this section.
-    if trade_information['order_status'] == 'PLACED' and  trade_information['order_side'] == 'BUY':
-        return ({
-            'can_order': True,
-            'side': 'SELL',
-            'price': price,
-            'description': 'Long exit stop-loss',
-            'order_type': 'LIMIT'})
-    return ({'order_type': 'WAIT'})
+    # Place Long exit (sell) conditions under this section.
+    trade_information['side'] = 'SELL'
+    trade_information['price'] = trade_information['price'] * 1.236
+    trade_information['description'] = 'SELL LIMIT signal'
+    trade_information['order_type'] = 'LIMIT'
+    return trade_information
+
 
 def long_entry_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
-    ## Place Long entry (buy) conditions under this section.
-    macd = indicators['macd']
-
-    if macd[0]['macd'] > macd[1]['macd'] and macd[1]['hist'] > macd[0]['hist']:
-        return ({
-            'can_order': True,
-            'side': 'BUY',
-            'description': 'Long entry signal',
-            'order_type': 'LIMIT'})
-
-    return ({'order_type': 'WAIT'})
+    # Place Long entry (buy) conditions under this section.
+    trade_information['side'] = 'BUY'
+    trade_information['price'] = prices['bidPrice']
+    trade_information['description'] = 'Long entry signal'
+    trade_information['order_type'] = 'LIMIT'
+    return trade_information
 
 
 def short_exit_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
-    ## Place Short exit (sell) conditions under this section.
+    # Place Short exit (sell) conditions under this section.
     pass
 
 
 def short_entry_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
-    ## Place Short entry (buy) conditions under this section.
+    # Place Short entry (buy) conditions under this section.
     pass
