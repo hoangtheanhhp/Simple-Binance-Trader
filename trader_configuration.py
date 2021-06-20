@@ -7,19 +7,18 @@ pRounding = 8
 
 
 def technical_indicators(candles):
-    indicators = {}
-
     time_values = [candle[0] for candle in candles]
     open_prices = [candle[1] for candle in candles]
     high_prices = [candle[2] for candle in candles]
     low_prices = [candle[3] for candle in candles]
     close_prices = [candle[4] for candle in candles]
-
-    indicators.update({'macd': TI.get_MACD(close_prices, time_values=time_values, map_time=True)})
-
-    indicators.update({'ema': {}})
-    indicators['ema'].update({'ema200': TI.get_EMA(close_prices, 200, time_values=time_values, map_time=True)})
-
+    indicators = {
+        'macd': TI.get_MACD(close_prices, time_values=time_values, map_time=True),
+        'RSI': TI.get_RSI(close_prices, time_values=time_values, map_time=True),
+        'ema': {
+            'ema200': TI.get_EMA(close_prices, 200, time_values=time_values, map_time=True)
+        }
+    }
     return indicators
 
 
@@ -83,10 +82,13 @@ def long_exit_conditions(custom_conditional_data, trade_information, indicators,
 
 def long_entry_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
     # Place Long entry (buy) conditions under this section.
-    trade_information['side'] = 'BUY'
-    trade_information['price'] = prices['bidPrice']
-    trade_information['description'] = 'Long entry signal'
-    trade_information['order_type'] = 'LIMIT'
+    macd = indicators['macd']
+    RSI = indicators['RSI']
+    if macd[0]['macd'] > macd[1]['macd'] and macd[1]['hist'] > macd[0]['hist'] and RSI[1] < 30:
+        trade_information['side'] = 'BUY'
+        trade_information['price'] = prices['bidPrice']
+        trade_information['description'] = 'Long entry signal'
+        trade_information['order_type'] = 'LIMIT'
     return trade_information
 
 

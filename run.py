@@ -11,7 +11,7 @@ LOGS_DIR = 'logs/'.format(cwd)
 ## Settup logging.
 log_format = '%(asctime)s:%(name)s:%(message)s'
 logging.basicConfig(
-    filename='app.log',
+    filename=LOGS_DIR + '/app.log',
     filemode='w',
     format=log_format,
     level=logging.INFO)
