@@ -86,26 +86,14 @@ def other_conditions(custom_conditional_data, position_information, previous_tra
 
 def long_exit_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
     ## Place Long exit (sell) conditions under this section.
-    macd = indicators['macd']
-
-    if macd[0]['macd'] < macd[1]['macd'] and macd[1]['hist'] < macd[0]['hist']:
+    if trade_information['order_status'] == 'PLACED' and  trade_information['order_side'] == 'BUY':
         return ({
+            'can_order': True,
             'side': 'SELL',
-            'description': 'Long exit signal',
-            'order_type': 'MARKET'})
-
-    if trade_information['order_type'] == 'STOP_LOSS':
-        return
-
-    price = float(
-        '{0:.{1}f}'.format((trade_information['buy_price'] - (trade_information['buy_price'] * 0.004)), pRounding))
-    return ({
-        'side': 'SELL',
-        'price': price,
-        'stopPrice': price * 0.05,
-        'description': 'Long exit stop-loss',
-        'order_type': 'STOP_LOSS_LIMIT'})
-
+            'price': price,
+            'description': 'Long exit stop-loss',
+            'order_type': 'LIMIT'})
+    return ({'order_type': 'WAIT'})
 
 def long_entry_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
     ## Place Long entry (buy) conditions under this section.
@@ -113,9 +101,10 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
 
     if macd[0]['macd'] > macd[1]['macd'] and macd[1]['hist'] > macd[0]['hist']:
         return ({
+            'can_order': True,
             'side': 'BUY',
             'description': 'Long entry signal',
-            'order_type': 'MARKET'})
+            'order_type': 'LIMIT'})
 
     return ({'order_type': 'WAIT'})
 
