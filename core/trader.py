@@ -302,7 +302,7 @@ class BaseTrader(object):
             # If order is to be placed or updated then do so.
             order = new_order
             if order['side'] == 'BUY':
-                if order['price'] * self.take_profit > self.last_price:
+                if order['price'] * 0.1 > self.last_price:
                     cp['order_type'] = 'WAIT'
                     return
                 order['quantity'] = '{0:.{1}f}'.format(

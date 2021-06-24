@@ -15,6 +15,7 @@ def technical_indicators(candles):
     indicators = {
         'macd': TI.get_MACD(close_prices, time_values=time_values, map_time=True),
         'RSI': TI.get_RSI(close_prices, time_values=time_values, map_time=True),
+        'BB': TI.get_BOLL(close_prices, time_values=time_values, map_time=True),
         'ema': {
             'ema200': TI.get_EMA(close_prices, 200, time_values=time_values, map_time=True)
         }
@@ -84,9 +85,11 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
     # Place Long entry (buy) conditions under this section.
     macd = indicators['macd']
     RSI = indicators['RSI']
-    if macd[0]['macd'] > macd[1]['macd'] and macd[1]['hist'] > macd[0]['hist'] and RSI[1] < 30:
+    BB = indicators['BB']
+    ATR = indicators['ATR']
+    if RSI[1] < 30 and candles[1][4] > candles[1][3] and BB[1]['B'] > candles[1][3]:
         trade_information['side'] = 'BUY'
-        trade_information['price'] = prices['bidPrice']
+        trade_information['price'] = candles[1][3]
         trade_information['description'] = 'Long entry signal'
         trade_information['order_type'] = 'LIMIT'
     return trade_information
