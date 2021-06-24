@@ -86,7 +86,6 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
     macd = indicators['macd']
     RSI = indicators['RSI']
     BB = indicators['BB']
-    ATR = indicators['ATR']
     if RSI[1] < 30 and candles[1][4] > candles[1][3] and BB[1]['B'] > candles[1][3]:
         trade_information['side'] = 'BUY'
         trade_information['price'] = candles[1][3]
