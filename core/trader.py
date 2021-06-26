@@ -414,16 +414,10 @@ class BaseTrader(object):
 
     def _cancel_order(self, order_id, order_type):
         ''' cancel orders '''
-        if self.configuration['run_type'] == 'REAL':
-            if order_type == 'OCO_LIMIT':
-                cancel_order_result = self.rest_api.cancel_oco_order(symbol=self.configuration['symbol'])
-            else:
-                cancel_order_result = self.rest_api.cancel_order(self.configuration['trading_type'],
-                                                                 symbol=self.configuration['symbol'], orderId=order_id)
-            logging.debug('[BaseTrader] {0} cancel order results:\n{1}'.format(self.print_pair, cancel_order_result))
-            return (cancel_order_result)
-        logging.debug('[BaseTrader] {0} cancel order.'.format(self.print_pair))
-        return (True)
+        cancel_order_result = self.rest_api.cancel_order(self.configuration['trading_type'],
+                                                         symbol=self.configuration['symbol'], orderId=order_id)
+        logging.debug('[BaseTrader] {0} cancel order results:\n{1}'.format(self.print_pair, cancel_order_result))
+        return cancel_order_result
 
     def get_trader_data(self):
         ''' Access that is availble for the traders details. '''

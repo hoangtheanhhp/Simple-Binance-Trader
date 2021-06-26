@@ -13,7 +13,7 @@ def technical_indicators(candles):
     low_prices = [candle[3] for candle in candles]
     close_prices = [candle[4] for candle in candles]
     indicators = {
-        'macd': TI.get_MACD(close_prices, time_values=time_values, map_time=True),
+        # 'macd': TI.get_MACD(close_prices, time_values=time_values, map_time=True),
         'RSI': TI.get_RSI(close_prices, time_values=time_values, map_time=True),
         'BB': TI.get_BOLL(close_prices, time_values=time_values, map_time=True),
         'ema': {
@@ -83,7 +83,6 @@ def long_exit_conditions(custom_conditional_data, trade_information, indicators,
 
 def long_entry_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
     # Place Long entry (buy) conditions under this section.
-    macd = indicators['macd']
     RSI = indicators['RSI']
     BB = indicators['BB']
     if RSI[1] < 30 and candles[1][4] > candles[1][3] and BB[1]['B'] > candles[1][3]:
