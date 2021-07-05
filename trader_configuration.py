@@ -23,6 +23,14 @@ def technical_indicators(candles):
     return indicators
 
 
+def search_price(candles):
+    high_prices = [candle[2] for candle in candles]
+    low_prices = [candle[3] for candle in candles]
+    low_price = min(low_prices)
+    high_price = max(high_prices)
+    return low_price, high_price
+
+
 '''
 --- Current Supported Order ---
     Below are the currently supported order types that can be placed which the trader
@@ -85,9 +93,16 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
     # Place Long entry (buy) conditions under this section.
     RSI = indicators['RSI']
     BB = indicators['BB']
+    low, high = search_price(candles)
     if RSI[1] < 30 and candles[1][4] > candles[1][3] and BB[1]['B'] > candles[1][3]:
         trade_information['side'] = 'BUY'
         trade_information['price'] = candles[1][3]
+        trade_information['description'] = 'Long entry signal'
+        trade_information['order_type'] = 'LIMIT'
+
+    if RSI[0] < 25 and prices['lastPrice'] < low * 0.9:
+        trade_information['side'] = 'BUY'
+        trade_information['price'] = prices['lastPrice']
         trade_information['description'] = 'Long entry signal'
         trade_information['order_type'] = 'LIMIT'
     return trade_information

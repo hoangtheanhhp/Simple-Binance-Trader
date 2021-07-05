@@ -101,7 +101,7 @@ class BaseTrader(object):
         self.trade_recorder = []
         self.state_data = {}
         self.rules = {}
-        self.last_price = None
+        self.last_order = None
 
         logging.debug('[BaseTrader][{0}] Initilized trader object.'.format(self.print_pair))
 
@@ -302,7 +302,7 @@ class BaseTrader(object):
             # If order is to be placed or updated then do so.
             order = new_order
             if order['side'] == 'BUY':
-                if order['price'] * 0.1 > self.last_price:
+                if order['price'] * 0.1 > self.last_order['price']:
                     cp['order_type'] = 'WAIT'
                     return
                 order['quantity'] = '{0:.{1}f}'.format(
@@ -347,7 +347,6 @@ class BaseTrader(object):
             # Setup the test order quantity and setup margin trade loan.
             if order['side'] == 'BUY':
                 cp['order_market_type'] = market_type
-                self.last_price = order_price
 
             # Update the live order id for real trades.
             cp['order_id'] = order_results['data']['orderId']
