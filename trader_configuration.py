@@ -100,11 +100,6 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
         trade_information['description'] = 'Long entry signal'
         trade_information['order_type'] = 'LIMIT'
 
-    if RSI[0] < 25 and prices['lastPrice'] < low * 0.9:
-        trade_information['side'] = 'BUY'
-        trade_information['price'] = prices['lastPrice']
-        trade_information['description'] = 'Long entry signal'
-        trade_information['order_type'] = 'LIMIT'
     return trade_information
 
 
