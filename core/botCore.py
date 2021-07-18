@@ -248,7 +248,8 @@ class BotCore():
         ## Get base quote pair (This prevents multiple different pairs from conflicting.)
         pair_one = settings['trading_markets'][0]
 
-        self.quote_asset = pair_one[:pair_one.index('-')]
+        self.quote_asset = pair_one[:pair_one.index("-")]
+        self.rules = settings['rules']
         self.base_currency = settings['trading_currency']
         self.candle_Interval = settings['trader_interval']
 
@@ -270,9 +271,9 @@ class BotCore():
 
         for market in self.rest_api.get_exchangeInfo()['symbols']:
             fmtMarket = '{0}-{1}'.format(market['quoteAsset'], market['baseAsset'])
-
+            pair = '{0}-{1}'.format(market['baseAsset'], market['quoteAsset'])
             # If the current market is not in the trading markets list then skip.
-            if not fmtMarket in self.trading_markets:
+            if not pair in self.trading_markets:
                 continue
 
             found_markets.append(fmtMarket)
@@ -297,7 +298,7 @@ class BotCore():
             mN = float(market['filters'][3]['minNotional'])
 
             # Put all rules into a json object to pass to the trader.
-            market_rules = {'LOT_SIZE': lS, 'TICK_SIZE': tS, 'MINIMUM_NOTATION': mN}
+            market_rules = {'LOT_SIZE': lS, 'TICK_SIZE': tS, 'MINIMUM_NOTATION': mN, 'PRICE': self.rules[pair]}
 
             # Initilize trader objecta dn also set-up its inital required data.
             traderObject = trader.BaseTrader(market['quoteAsset'], market['baseAsset'], self.rest_api,

@@ -2,6 +2,7 @@
 import os
 import logging
 from core import botCore
+import json
 
 ## Setup    
 cwd = os.getcwd()
@@ -95,6 +96,8 @@ def settings_reader():
 
             elif key == 'MAX_DEPTH':
                 data = int(data)
+            elif key == 'RULES':
+                data = json.loads(data)
 
             settings_file_data.update({key.lower(): data})
 

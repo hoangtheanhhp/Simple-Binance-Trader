@@ -94,13 +94,15 @@ def long_entry_conditions(custom_conditional_data, trade_information, indicators
     RSI = indicators['RSI']
     BB = indicators['BB']
     low, high = search_price(candles)
+    trade_information['can_order'] = False
     if RSI[1] < 30 and candles[1][4] > candles[1][3] and BB[1]['B'] > candles[1][3]:
         trade_information['side'] = 'BUY'
         trade_information['price'] = candles[1][3]
         trade_information['description'] = 'Long entry signal'
-        trade_information['order_type'] = 'LIMIT'
-
-    return trade_information
+        trade_information['type'] = 'LIMIT'
+        trade_information['can_order'] = True
+        return trade_information
+    return None
 
 
 def short_exit_conditions(custom_conditional_data, trade_information, indicators, prices, candles, symbol):
