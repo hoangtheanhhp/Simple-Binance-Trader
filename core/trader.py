@@ -47,12 +47,6 @@ BASE_MARKET_LAYOUT = {
     'quantity': 0,
 }
 
-# Market extra required data.
-TYPE_MARKET_EXTRA = {
-    'loan_cost': 0,  # Loan cost.
-    'loan_id': None,  # Loan id.
-}
-
 
 class BaseTrader(object):
     def __init__(self, quote_asset, base_asset, rest_api, socket_api=None, data_if=None):
@@ -124,9 +118,6 @@ class BaseTrader(object):
         self.market_prices.update(copy.deepcopy(BASE_TRADE_PRICE_LAYOUT))
         self.state_data.update(copy.deepcopy(BASE_STATE_LAYOUT))
 
-        if trading_type == 'MARGIN':
-            self.activity.update(copy.deepcopy(TYPE_MARKET_EXTRA))
-
         logging.debug('[BaseTrader][{0}] Initilized trader attributes with data.'.format(self.print_pair))
 
     def start(self, MAC, wallet_pair, open_orders=None):
@@ -142,7 +133,7 @@ class BaseTrader(object):
         logging.info('[BaseTrader][{0}] Starting the trader object.'.format(self.print_pair))
         sock_symbol = self.base_asset + self.quote_asset
 
-        if self.socket_api != None:
+        if not self.socket_api:
             while True:
                 if self.socket_api.get_live_candles()[sock_symbol] and (
                         'a' in self.socket_api.get_live_depths()[sock_symbol]):
@@ -205,9 +196,10 @@ class BaseTrader(object):
             if 'outboundAccountPosition' in socket_buffer_global:
                 if last_wallet_update_time != socket_buffer_global['outboundAccountPosition']['E']:
                     self.wallet_pair, last_wallet_update_time = self.update_wallets(socket_buffer_global)
-
+            ## For managing active orders.
+            self.activity = self._order_status_manager()
             # Update martket prices with current data
-            if books_data != None:
+            if not books_data:
                 self.market_prices = {
                     'lastPrice': candles[0][4],
                     'askPrice': books_data['a'][0][0],
@@ -225,6 +217,8 @@ class BaseTrader(object):
                     if self.activity['status'] == 'COMPLETE':
                         self.activity['status'] = 'WAIT'
                     self._trade_manager(market_type, indicators, candles)
+
+            time.sleep(1)
 
             current_localtime = time.localtime()
             self.state_data['last_update_time'] = '{0}:{1}:{2}'.format(current_localtime[3], current_localtime[4],
@@ -296,6 +290,7 @@ class BaseTrader(object):
                     self.state_data['runtime_state'] = 'CHECK_ORDERS'
                 return
             self.order = self.activity
+            self.order['status'] = 'PLACED'
             self.order['price'] = order_results['data']['price']
             self.order['id'] = order_results['data']['orderId']
             logging.info('[BaseTrader] {0} Order placed for {1}.'.format(self.print_pair, new_order['type']))
@@ -387,7 +382,7 @@ class BaseTrader(object):
             'rules': self.rules
         }
 
-        return (trader_data)
+        return trader_data
 
     def strip_timestamps(self, indicators):
 
@@ -429,7 +424,7 @@ class BaseTrader(object):
         logging.info('[BaseTrader] New account data pulled, wallets updated. [{0}]'.format(self.print_pair))
         return (wallet_pair, last_wallet_update_time)
 
-    def _order_status_manager(self, socket_buffer_symbol):
+    def _order_status_manager(self):
         '''
         This is the manager for all and any active orders.
         -> Check orders (Test/Real).
@@ -437,19 +432,11 @@ class BaseTrader(object):
         -> Monitor trade outcomes.
             Monitor and note down the outcome of trades for keeping track of progress.
         '''
-        order = self.rest_api.get_order(self.configuration['trading_type'], orderId=self.order['id'])
-        # Manage order reports sent via the socket.
-        if 'executionReport' in socket_buffer_symbol:
-            order_seen = socket_buffer_symbol['executionReport']
-
-            # Manage trader placed orders via order ID's to prevent order conflict.
-            if order_seen['i'] == self.order['id']:
-                active_trade = True
-
-            elif self.order['status'] == 'PLACED':
-                active_trade = True
+        order = self.rest_api.get_order(self.configuration['trading_type'], symbol=self.configuration['symbol'],
+                                        orderId=self.order['id'])
         trade_done = False
-        ## Monitor trade outcomes.
+        if order['origQty'] == order['executedQty']:
+            trade_done = True
         cp = self.order
         if trade_done:
             # Update order recorder.
