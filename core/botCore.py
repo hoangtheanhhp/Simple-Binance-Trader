@@ -374,8 +374,7 @@ class BotCore():
                     m_split = cached_trader['market'].split('-')
                     if (m_split[1] + m_split[0]) == currSymbol:
                         trader_.configuration = cached_trader['configuration']
-                        trader_.custom_conditional_data = cached_trader['custom_conditions']
-                        trader_.market_activity = cached_trader['market_activity']
+                        trader_.activity = cached_trader['activity']
                         trader_.trade_recorder = cached_trader['trade_recorder']
                         trader_.state_data = cached_trader['state_data']
 

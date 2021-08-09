@@ -1,0 +1,8 @@
+- self.order
+    - side
+        - BUY
+        - SELL
+    - status
+        - PLACED
+        - None
+    - 
